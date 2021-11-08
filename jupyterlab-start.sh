@@ -1,4 +1,6 @@
 #!/bin/bash
+set -o nounset -o errexit
+
 CONF_DIR="$HOME/.jupyter"
 CONF_FILE="${CONF_DIR}/jupyter_notebook_config.py"
 mkdir -p "${CONF_DIR}"
