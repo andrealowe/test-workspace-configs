@@ -4,9 +4,6 @@ CONF_DIR="${HOME}/.jupyterlab"
 CONF_FILE="${CONF_DIR}/jupyter_lab_config.py"
 PREFIX=/${DOMINO_PROJECT_OWNER}/${DOMINO_PROJECT_NAME}/notebookSession/${DOMINO_RUN_ID}/
 
-sudo mkdir -p "${CONF_FILE%/*}" 
-sudo chown -R ubuntu:ubuntu ${CONF_DIR}
-
 printf "c.ServerApp.notebook_dir='/'
 # The default cell execution timeout in nbconvert is 30 seconds, set it to a year
 c.ExecutePreprocessor.timeout=365*24*60*60
