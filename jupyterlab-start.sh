@@ -1,20 +1,19 @@
 #!/bin/bash
-set -o nounset -o errexit
 
-CONF_DIR="$HOME/.jupyter"
-CONF_FILE="${CONF_DIR}/jupyter_notebook_config.py"
-mkdir -p "${CONF_DIR}"
-
+CONF_DIR="${HOME}/.jupyterlab"
+CONF_FILE="${CONF_DIR}/jupyter_lab_config.py"
 PREFIX=/${DOMINO_PROJECT_OWNER}/${DOMINO_PROJECT_NAME}/notebookSession/${DOMINO_RUN_ID}/
 
-cat >> $CONF_FILE << EOF
-c = get_config()
-c.NotebookApp.notebook_dir = '/'
-c.NotebookApp.base_url = '${PREFIX}'
-c.NotebookApp.tornado_settings = {'headers': {'Content-Security-Policy': 'frame-ancestors *'}, 'static_url_prefix': '${PREFIX}static/'}
-c.NotebookApp.default_url = '/lab/tree${DOMINO_WORKING_DIR}'
-c.NotebookApp.token = u''
-EOF
+sudo mkdir -p "${CONF_FILE%/*}" 
+sudo chown -R ubuntu:ubuntu ${CONF_DIR}
 
-COMMAND='jupyter-lab --config="$CONF_FILE" --no-browser --ip="0.0.0.0" 2>&1'
-eval ${COMMAND} 
+printf "c.ServerApp.notebook_dir='/'
+# The default cell execution timeout in nbconvert is 30 seconds, set it to a year
+c.ExecutePreprocessor.timeout=365*24*60*60
+c.LabApp.default_url='/lab/tree${DOMINO_WORKING_DIR}'
+c.ServerApp.base_url='${PREFIX}'
+c.ServerApp.tornado_settings={'headers': {'Content-Security-Policy': 'frame-ancestors *'}, 'static_url_prefix': '${PREFIX}static/'}
+c.ServerApp.token=u''
+c.NotebookApp.iopub_data_rate_limit=10000000000" >> ${CONF_FILE}
+
+jupyter-lab --config="${CONF_FILE}" --no-browser --ip="0.0.0.0" 2>&1
